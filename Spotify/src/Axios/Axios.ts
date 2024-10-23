@@ -1,24 +1,24 @@
 import axios from 'axios';
 
-// Create an axios instance without authentication
+
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/api/', // Replace with your API base URL
-  timeout: 10000, // Set a timeout of 10 seconds
+  baseURL: 'http://localhost:3000/api/', 
+  timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
-// Create an axios instance with authentication
+
 export const axiosAuthInstance = axios.create({
-  baseURL: 'http://localhost:3000/api/', // Replace with your API base URL
-  timeout: 10000, // Set a timeout of 10 seconds
+  baseURL: 'http://localhost:3000/api/', 
+  timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to the authenticated instance
 axiosAuthInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
@@ -32,7 +32,6 @@ axiosAuthInstance.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle token refresh (if needed)
 axiosAuthInstance.interceptors.response.use(
   (response) => response,
   async (error) => {

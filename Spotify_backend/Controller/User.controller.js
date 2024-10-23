@@ -1,6 +1,7 @@
 const User = require('../Models/User.models');
 const { CustomError, asyncHandler } = require('../Utils/Utils');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 exports.signup = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -34,21 +35,35 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
         return next(new CustomError('Incorrect email or password', 401));
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET, {
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN
     });
 
-    user.password = undefined;
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
+        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
+    });
+
+    const userResponse = user.toObject();
+    delete userResponse.__v;
+    delete userResponse._id;
+    delete userResponse.password
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'strict', 
+        maxAge: 30 * 24 * 60 * 60 * 1000, 
+    });
 
     res.status(200).json({
         status: 'success',
-        token,
+        accessToken,
         data: {
-            user
+            user: userResponse
         }
     });
 });

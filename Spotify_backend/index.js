@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
+const cookieParser = require('cookie-parser');
 
 const authRouter = require("./Routes/Auth.routes")
 const { globalErrorHandler } = require("./Utils/Utils");
@@ -10,9 +11,13 @@ const { globalErrorHandler } = require("./Utils/Utils");
 const App = Express();
 require('dotenv').config();
 
+App.use(cookieParser());
 App.use(Express.json());
 App.use(helmet())
-App.use(cors())
+App.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true
+}))
 App.use(morgan("dev"))
 
 
