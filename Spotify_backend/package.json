@@ -1,0 +1,27 @@
+{
+  "name": "spotify",
+  "version": "1.0.0",
+  "description": "I am creating for the test purpose",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astra-at-top/Spotifyclub.git"
+  },
+  "keywords": [
+    "Hello",
+    "world"
+  ],
+  "author": "Prateek Kushwaha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/astra-at-top/Spotifyclub/issues"
+  },
+  "homepage": "https://github.com/astra-at-top/Spotifyclub#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
