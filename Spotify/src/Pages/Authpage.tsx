@@ -20,11 +20,18 @@ function AuthPage() {
     const dispatch = useDispatch<AppDispatch>()
     const loading = useAppSelector(state  => state.auth.loading)
     const backendError  = useAppSelector(state => state.auth.error);
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const navigate = useNavigate()
 
     useEffect(() => {
         setIsLogin(location.pathname === "/login")
     }, [location])
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const onSubmit = (data: AuthData) => {
         if(location.pathname === "/login") dispatch(login({email : data.email , password : data.password , navigate : navigate}))
@@ -33,7 +40,7 @@ function AuthPage() {
 
     const watchPassword = watch("password")
 
-    if(loading) <Loading />
+    if(loading) return <Loading />
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-gray-900 font-firacode">
             <div className="mb-6 flex gap-2">

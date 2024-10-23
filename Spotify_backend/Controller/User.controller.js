@@ -39,11 +39,11 @@ exports.login = asyncHandler(async (req, res, next) => {
         return next(new CustomError('Incorrect email or password', 401));
     }
 
-    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_ACCESS_SECRET, {
+    const accessToken = jwt.sign({ id: user.email }, process.env.JWT_ACCESS_SECRET, {
         expiresIn: process.env.JWT_ACCESS_EXPIRES_IN
     });
 
-    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
+    const refreshToken = jwt.sign({ id: user.email }, process.env.JWT_REFRESH_SECRET, {
         expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
     });
 
@@ -65,5 +65,99 @@ exports.login = asyncHandler(async (req, res, next) => {
         data: {
             user: userResponse
         }
+    });
+});
+
+
+exports.refreshToken = asyncHandler(async (req, res, next) => {
+    const refreshToken = req.cookies.refreshToken;
+    console.log(req.cookies,"req.cookies")
+
+
+    if (!refreshToken) {
+        return next(new CustomError('No refresh token provided', 403));
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    console.log(decoded,"decoded")
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+        return next(new CustomError('User not found', 404));
+    }
+
+    const newAccessToken = jwt.sign({ id: user.email }, process.env.JWT_ACCESS_SECRET, {
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN
+    });
+
+    res.status(200).json({
+        status: 'success',
+        accessToken: newAccessToken
+    });
+});
+
+exports.verifyToken = asyncHandler(async (req, res, next) => {
+    let token;
+    console.log(" i am triggerd")
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return next(new CustomError('No access token provided', 401));
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp < currentTimestamp) {
+            return next(new CustomError('Token has expired', 401));
+        }
+
+        const user = await User.findOne({ email:     decoded.id });
+        if (!user) {
+            return next(new CustomError('User not found', 404));
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Token is valid',
+            data: {
+                user: {
+                    email: user.email
+                }
+            }
+        });
+
+    } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return next(new CustomError('Token has expired', 401));
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return next(new CustomError('Invalid token', 401));
+        }
+
+        return next(new CustomError('Token verification failed', 401));
+    }
+});
+
+
+
+exports.logout = asyncHandler(async (req, res, next) => {
+    res.clearCookie('refreshToken')
+  
+    res.status(200).json({
+      status: 'success',
+      message: 'Logged out successfully'
+    });
+  });
+
+
+exports.test = asyncHandler(async (req, res, next) => {
+
+    res.status(200).json({
+        status: 'success',
+        message: 'getting  out successfully'
     });
 });

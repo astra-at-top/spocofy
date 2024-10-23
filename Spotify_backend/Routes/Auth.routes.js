@@ -1,9 +1,14 @@
 const express = require('express');
 const authRouter = express.Router();
-const { signup, login } = require('../Controller/User.controller');
+const authMiddleware = require("../Middleware/Auth.middleware.js")
+const { signup, login, refreshToken, verifyToken, logout, test } = require('../Controller/User.controller');
 
 // Signup route
 authRouter.post('/signup', signup);
-authRouter.post('/login', login)
+authRouter.post('/login', login);
+authRouter.post('/refresh-token', refreshToken);
+authRouter.get('/verify', verifyToken);
+authRouter.post('/logout', authMiddleware , logout);
+authRouter.post('/test', authMiddleware, test)
 
 module.exports = authRouter;

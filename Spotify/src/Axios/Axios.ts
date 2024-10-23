@@ -7,7 +7,7 @@ export const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true // Add this to enable sending cookies
 });
 
 
@@ -17,11 +17,12 @@ export const axiosAuthInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 axiosAuthInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -32,19 +33,60 @@ axiosAuthInstance.interceptors.request.use(
   }
 );
 
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
+
 axiosAuthInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
     if (error.response.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers['Authorization'] = 'Bearer ' + token;
+          return axiosAuthInstance(originalRequest);
+        }).catch(err => Promise.reject(err));
+      }
+
       originalRequest._retry = true;
-      // Implement your token refresh logic here
-      // For example:
-      // const newToken = await refreshToken();
-      // localStorage.setItem('token', newToken);
-      // originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-      // return axiosAuthInstance(originalRequest);
+      isRefreshing = true;
+
+      return new Promise((resolve, reject) => {
+        axiosAuthInstance.post('/auth/refresh-token')
+          .then(({ data }) => {
+            const { accessToken } = data;
+            axiosAuthInstance.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+            originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
+            processQueue(null, accessToken);
+            resolve(axiosAuthInstance(originalRequest));
+          })
+          .catch((err) => {
+            processQueue(err, null);
+            reject(err);
+          })
+          .finally(() => {
+            isRefreshing = false;
+          });
+      });
     }
+
     return Promise.reject(error);
   }
 );
