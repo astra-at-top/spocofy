@@ -1,3 +1,4 @@
+
 const CustomError = class extends Error {
     constructor(message, statusCode) {
         super(message);
@@ -32,8 +33,9 @@ const globalErrorHandler = (err, req, res, next) => {
     res.status(err.statusCode).json(errorResponse);
 };
 
+
 module.exports = {
     CustomError,
     asyncHandler,
-    globalErrorHandler
+    globalErrorHandler,
 };

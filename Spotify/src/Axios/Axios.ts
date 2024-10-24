@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-
 export const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000/api/', 
   timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true // Add this to enable sending cookies
+  withCredentials: true
 });
-
 
 export const axiosAuthInstance = axios.create({
   baseURL: 'http://localhost:3000/api/', 
@@ -33,7 +31,6 @@ axiosAuthInstance.interceptors.request.use(
   }
 );
 
-
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -48,7 +45,6 @@ const processQueue = (error: any, token: string | null = null) => {
   
   failedQueue = [];
 };
-
 
 axiosAuthInstance.interceptors.response.use(
   (response) => response,
@@ -72,6 +68,7 @@ axiosAuthInstance.interceptors.response.use(
         axiosAuthInstance.post('/auth/refresh-token')
           .then(({ data }) => {
             const { accessToken } = data;
+            localStorage.setItem("token", accessToken)
             axiosAuthInstance.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
             originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
             processQueue(null, accessToken);

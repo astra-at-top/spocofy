@@ -1,3 +1,5 @@
 Spotify/node_modules
 Spotify_backend/node_modules
 Spotify/README.md
+**/*.env
+Spotify_backend/.env

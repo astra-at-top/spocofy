@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading />; 
   }
 
   return isAuthenticated ? <>{children}</> : null;

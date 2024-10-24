@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { asyncHandler, CustomError } = require('../Utils/Utils.js');
+const User = require('../Models/User.models');
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -13,7 +14,12 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 
     try {
         const decoded = await jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-        req.user = decoded;
+
+        const user = await User.findOne({ email: decoded.id });
+        if (!user) {
+            throw new CustomError('User not found', 404);
+        }
+        req.user = user;
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {

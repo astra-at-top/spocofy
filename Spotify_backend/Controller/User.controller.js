@@ -79,13 +79,11 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
     }
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    console.log(decoded,"decoded")
-    const user = await User.findById(decoded.id);
+    const user = await User.findOne({email : decoded.id});
 
     if (!user) {
         return next(new CustomError('User not found', 404));
     }
-
     const newAccessToken = jwt.sign({ id: user.email }, process.env.JWT_ACCESS_SECRET, {
         expiresIn: process.env.JWT_ACCESS_EXPIRES_IN
     });
@@ -114,8 +112,8 @@ exports.verifyToken = asyncHandler(async (req, res, next) => {
         if (decoded.exp && decoded.exp < currentTimestamp) {
             return next(new CustomError('Token has expired', 401));
         }
-
-        const user = await User.findOne({ email:     decoded.id });
+        console.log(decoded,"decoded")
+        const user = await User.findOne({ email: decoded.id });
         if (!user) {
             return next(new CustomError('User not found', 404));
         }

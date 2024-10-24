@@ -3,7 +3,6 @@ const authRouter = express.Router();
 const authMiddleware = require("../Middleware/Auth.middleware.js")
 const { signup, login, refreshToken, verifyToken, logout, test } = require('../Controller/User.controller');
 
-// Signup route
 authRouter.post('/signup', signup);
 authRouter.post('/login', login);
 authRouter.post('/refresh-token', refreshToken);

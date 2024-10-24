@@ -11,17 +11,15 @@ export function useAuth() {
 
   useLayoutEffect(() => {
     const checkAuth = async () => {
-      dispatch(setLoading(true)); // Set isLoading to true at the start
+      dispatch(setLoading(true)); 
       try {
-        // First, try to verify the existing token
         await axiosAuthInstance.get('/auth/verify');
         dispatch(setAuthenticated(true));
       } catch (error) {
-        // If token verification fails, try to refresh the token
         localStorage.removeItem("token");
-          dispatch(setAuthenticated(false));
+        dispatch(setAuthenticated(false));
       } finally {
-        dispatch(setLoading(false)); // Set isLoading back to false when done
+        dispatch(setLoading(false))
       }
     };
     checkAuth();
