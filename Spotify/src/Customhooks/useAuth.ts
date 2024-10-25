@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosAuthInstance } from '../Axios/Axios';
 import { setAuthenticated, setLoading } from '../Store/Reducer/AuthpageReducer';
-import { RootState } from '../Store/store'; // Assuming you have a RootState type defined
+import { RootState } from '../Store/store'; 
 
 export function useAuth() {
   const dispatch = useDispatch();

@@ -22,7 +22,7 @@ function App() {
       <Routes>
         <Route path='/login' element={<AuthPage />} />
         <Route path='/signup' element={<AuthPage />} />
-        <Route path='/dashboard' element={
+        <Route path='/' element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
@@ -30,7 +30,6 @@ function App() {
           <Route index element={<Dashboardhome/>} />
           <Route path='search' element={<SearchSong />} />
           <Route path='playlist' element={<Playlist/>} />
-          {/* <Route path='playlist/create/' element={<PlaylistCreate/>}/> */}
           <Route path='playlist/:id' element={<PlaylistDetail/>} />
         </Route>
         <Route path='*' element={<PageNotFound />} />

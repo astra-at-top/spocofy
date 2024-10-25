@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { login , signup } from "../Store/Reducer/AuthpageReducer"
 import { AppDispatch } from "../Store/store"
 import { useAppSelector } from "../Store/store"
 import Loading from "./Loading"
+
 
 interface AuthData {
     email: string,
@@ -29,7 +30,7 @@ function AuthPage() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/dashboard');
+            navigate('/');
         }
     }, [isAuthenticated, navigate]);
 
@@ -94,7 +95,14 @@ function AuthPage() {
                         {isLogin ? "Login" : "Sign Up"}
                     </button>
                 </form>
+                <div>
+
+                </div>
             </div>
+            <div className="text-purple-600 mt-2">
+                {isLogin  ? <Link to="/signup">Signup ?</Link> : <Link to='/login'>Login ?</Link>}
+            </div>
+
         </div>
     )
 }

@@ -41,7 +41,7 @@ const PlaylistDetail = () => {
             title: "Playlist has been deleted",
             description: `${playlist?.name} has been deleted from the system`,
           });
-          navigate('/dashboard/playlist');
+          navigate('/playlist');
         }
       }));
     }
@@ -77,7 +77,7 @@ const PlaylistDetail = () => {
         <div className="flex justify-between items-center mb-4">
           <button 
             className="bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-full shadow-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
-            onClick={() => navigate('/dashboard/playlist')}
+            onClick={() => navigate('/playlist')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />

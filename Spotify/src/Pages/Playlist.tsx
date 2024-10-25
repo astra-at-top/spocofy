@@ -66,7 +66,10 @@ const Playlist = () => {
         <h1 className="text-3xl font-bold text-white">Your Playlists</h1>
         <button 
           className="bg-purple-600 text-white py-2 px-4 hover:bg-purple-700 transition-colors duration-300"
-          onClick={() => addPlaylistRef.current?.open()}
+          onClick={() => {
+            setPlaylistToUpdate(undefined);
+            addPlaylistRef.current?.open()
+          }}
         >
           Add Playlist
         </button>
@@ -112,7 +115,7 @@ const Playlist = () => {
                   <div className="flex justify-between items-center mt-1">
                     <button 
                       className="bg-purple-600 text-white text-xs py-1 px-2 sm:px-3 hover:bg-purple-700 transition-colors duration-300 w-full"
-                      onClick={() => navigate(`/dashboard/playlist/${playlist._id}`)}
+                      onClick={() => navigate(`/playlist/${playlist._id}`)}
                     >
                       Show more
                     </button>

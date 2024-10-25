@@ -51,6 +51,10 @@ const AddPlaylist = forwardRef<AddPlaylistHandle, AddPlaylistProps>(({ updateDat
       setValue('name', updateData.name);
       setValue('description', updateData.description);
       setValue('coverImage', updateData.coverImage);
+    }else{
+      setValue('name', "");
+      setValue('description', "");
+      setValue('coverImage', "");
     }
   }, [updateData, setValue]);
 
